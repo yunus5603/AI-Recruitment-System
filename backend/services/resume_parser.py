@@ -53,7 +53,15 @@ async def parse_resume(file_path: str) -> ResumeData:
         )
         
         # Parse the JSON response
-        structured_data = json.loads(response.choices[0].message.content)
+        content = response.choices[0].message.content
+        
+        # Clean up markdown code blocks if present
+        if "```json" in content:
+            content = content.split("```json")[1].split("```")[0]
+        elif "```" in content:
+            content = content.split("```")[1]
+            
+        structured_data = json.loads(content.strip())
 
         
         return ResumeData(
