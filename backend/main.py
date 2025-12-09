@@ -2,12 +2,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
-from routers import candidates, interview
+from routers import candidates, interview, analytics
 
 # Load environment variables
 load_dotenv()
 
-app = FastAPI(title="AI Recruitment System API")
+from contextlib import asynccontextmanager
+from models.db import create_db_and_tables
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    create_db_and_tables()
+    yield
+
+app = FastAPI(title="AI Recruitment System API", lifespan=lifespan)
 
 # Configure CORS
 origins = [
@@ -26,6 +34,7 @@ app.add_middleware(
 # Include routers
 app.include_router(candidates.router)
 app.include_router(interview.router)
+app.include_router(analytics.router)
 
 @app.get("/")
 def read_root():

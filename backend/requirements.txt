@@ -5,3 +5,6 @@ pypdf
 groq
 pydantic
 python-dotenv
+sqlmodel
+reportlab
+edge-tts

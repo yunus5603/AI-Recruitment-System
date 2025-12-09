@@ -31,6 +31,7 @@ class ChatMessage(BaseModel):
     """Chat message for interview"""
     role: str  # 'user' or 'assistant'
     content: str
+    code_context: Optional[str] = None
 
 class CodeExecutionRequest(BaseModel):
     """Request to execute code"""

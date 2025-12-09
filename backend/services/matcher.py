@@ -53,8 +53,16 @@ async def match_resume_to_job(resume: ResumeData, job: JobDescription) -> MatchR
         )
 
         
+        content = response.choices[0].message.content
+        
+        # Clean up markdown code blocks if present
+        if "```json" in content:
+            content = content.split("```json")[1].split("```")[0].strip()
+        elif "```" in content:
+            content = content.split("```")[1].split("```")[0].strip()
+            
         # Parse the JSON response
-        result = json.loads(response.choices[0].message.content)
+        result = json.loads(content)
         
         match_score = result["match_score"]
         
