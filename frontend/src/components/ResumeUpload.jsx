@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiUrl } from '../lib/api';
 
 function ResumeUpload({ onResumeUploaded }) {
     const [uploading, setUploading] = useState(false);
@@ -43,7 +44,7 @@ function ResumeUpload({ onResumeUploaded }) {
         formData.append('file', file);
 
         try {
-            const response = await fetch('http://localhost:8000/candidates/upload-resume', {
+            const response = await fetch(apiUrl('/candidates/upload-resume'), {
                 method: 'POST',
                 body: formData,
             });

@@ -1,5 +1,9 @@
 import { useState, useRef } from 'react';
 
+// Monotonic clock for silence detection. Called only from event handlers and
+// animation frames, never during render.
+const now = () => performance.now();
+
 const useAudioRecorder = () => {
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorder = useRef(null);
@@ -49,7 +53,7 @@ const useAudioRecorder = () => {
             setIsRecording(true);
 
             // Avoid immediate stop by unsetting silence start for a grace period
-            silenceStart.current = Date.now() + 1000; // 1 second grace period
+            silenceStart.current = now() + 1000; // 1 second grace period
 
             // Start analyzing for silence
             detectSilence(onSilence);
@@ -81,8 +85,8 @@ const useAudioRecorder = () => {
             // Simple Threshold check
             if (average < SILENCE_THRESHOLD) {
                 if (!silenceStart.current) {
-                    silenceStart.current = Date.now();
-                } else if (Date.now() - silenceStart.current > SILENCE_DURATION) {
+                    silenceStart.current = now();
+                } else if (now() - silenceStart.current > SILENCE_DURATION) {
                     // Silence detected for duration -> Auto Stop
                     if (onSilence) {
                         onSilence(); // Callback to parent to trigger stop sequence
@@ -133,7 +137,7 @@ const useAudioRecorder = () => {
         });
     };
 
-    return { isRecording, startRecording, stopRecording, volume };
+    return { isRecording, startRecording, stopRecording };
 };
 
 export default useAudioRecorder;

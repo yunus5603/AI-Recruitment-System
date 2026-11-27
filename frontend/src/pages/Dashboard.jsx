@@ -3,6 +3,7 @@ import ResumeUpload from '../components/ResumeUpload';
 import JobDescriptionInput from '../components/JobDescriptionInput';
 import CandidateList from '../components/CandidateList';
 import { SkillsChart } from '../components/DashboardCharts';
+import { apiUrl } from '../lib/api';
 
 function Dashboard() {
     const [candidates, setCandidates] = useState([]);
@@ -24,8 +25,8 @@ function Dashboard() {
     const fetchAnalytics = async () => {
         try {
             const [statsRes, skillsRes] = await Promise.all([
-                fetch('http://localhost:8000/analytics/dashboard'),
-                fetch('http://localhost:8000/analytics/skills')
+                fetch(apiUrl('/analytics/dashboard')),
+                fetch(apiUrl('/analytics/skills'))
             ]);
             if (statsRes.ok && skillsRes.ok) {
                 setStats(await statsRes.json());
@@ -47,7 +48,7 @@ function Dashboard() {
 
     const handleExport = async () => {
         try {
-            const response = await fetch('http://localhost:8000/analytics/export');
+            const response = await fetch(apiUrl('/analytics/export'));
             if (!response.ok) throw new Error("Export failed");
 
             const blob = await response.blob();

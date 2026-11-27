@@ -1,0 +1,28 @@
+# One command for the whole stack:  docker compose up --build
+# UI: http://localhost:5173  API docs: http://localhost:8000/docs
+# Without GROQ_API_KEY the app runs in demo mode (offline heuristics).
+services:
+  backend:
+    build: ./backend
+    env_file:
+      - path: ./backend/.env
+        required: false
+    environment:
+      CORS_ORIGINS: http://localhost:5173
+    ports:
+      - "8000:8000"
+    volumes:
+      - db-data:/data
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  db-data:
