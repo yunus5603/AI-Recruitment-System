@@ -1,0 +1,30 @@
+name: Bug report
+description: Something isn't working
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Upload resume ...
+        2. Click ...
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - Demo mode (no API key)
+        - With GROQ_API_KEY
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      render: shell
