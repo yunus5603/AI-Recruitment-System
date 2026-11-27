@@ -1,12 +1,32 @@
+"""Generate a sample resume PDF for trying the upload flow.
+
+Usage: python scripts/create_sample_resume.py [output.pdf]
+"""
+
+import sys
+
 from reportlab.pdfgen import canvas
 
-def create_dummy_pdf(filename):
+LINES = [
+    "Jane Doe",
+    "jane.doe@example.com | +1 555 123 4567",
+    "Senior Software Engineer",
+    "Skills: Python, FastAPI, PostgreSQL, Docker, AWS, React",
+    "Experience: 6 years building backend services and data pipelines",
+    "Education: B.Sc. Computer Science",
+]
+
+
+def create_sample_resume(filename: str) -> None:
     c = canvas.Canvas(filename)
-    c.drawString(100, 750, "John Doe")
-    c.drawString(100, 730, "Software Engineer")
-    c.drawString(100, 710, "Skills: Python, React, AI")
+    y = 750
+    for line in LINES:
+        c.drawString(72, y, line)
+        y -= 20
     c.save()
 
+
 if __name__ == "__main__":
-    create_dummy_pdf("dummy_resume.pdf")
-    print("Created dummy_resume.pdf")
+    out = sys.argv[1] if len(sys.argv) > 1 else "sample_resume.pdf"
+    create_sample_resume(out)
+    print(f"Created {out}")
