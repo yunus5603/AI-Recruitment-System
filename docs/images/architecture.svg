@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 700" width="1280" height="700" font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title>AI Recruitment System architecture</title>
+  <desc>React UI talks to a FastAPI backend over REST. Routers call services for resume parsing, matching, an LLM client and a code sandbox. The backend uses Groq (Llama 3.3 70B and Whisper), Edge TTS, an isolated sandbox process and SQLite.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#111733"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c084fc"/>
+      <stop offset="1" stop-color="#f472b6"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+    <style>
+      .panel { fill: #121a2e; stroke: #26314f; stroke-width: 1.5; }
+      .card { fill: #18223a; stroke: #2b3758; stroke-width: 1; }
+      .h { fill: #f1f5f9; font-size: 17px; font-weight: 700; }
+      .ph { font-size: 13px; font-weight: 700; letter-spacing: 2px; }
+      .sub { fill: #94a3b8; font-size: 13px; }
+      .t { fill: #e2e8f0; font-size: 15px; font-weight: 600; }
+      .d { fill: #94a3b8; font-size: 12.5px; }
+      .chip { font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace; font-size: 14px; font-weight: 600; fill: #ccfbf1; }
+      .wire { stroke: #94a3b8; stroke-width: 1.6; fill: none; }
+      .lbl { fill: #cbd5e1; font-size: 12px; font-weight: 600; }
+      .pill { fill: #18223a; stroke: #2b3758; }
+      .pt { fill: #cbd5e1; font-size: 13px; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="700" rx="18" fill="url(#bg)"/>
+
+  <!-- Title -->
+  <text x="40" y="54" font-size="26" font-weight="800" fill="url(#title)">AI Recruitment System</text>
+  <text x="40" y="78" class="sub">Architecture overview</text>
+
+  <!-- ============ CLIENT ============ -->
+  <rect x="40" y="104" width="280" height="496" rx="14" class="panel"/>
+  <text x="64" y="136" class="ph" fill="#c084fc">CLIENT</text>
+  <text x="64" y="156" class="sub">React 19 · Vite · Tailwind</text>
+
+  <rect x="64" y="186" width="232" height="164" rx="10" class="card"/>
+  <rect x="64" y="186" width="4" height="164" rx="2" fill="#a855f7"/>
+  <text x="84" y="214" class="t">Dashboard</text>
+  <text x="84" y="242" class="d">• Drag-and-drop resume upload</text>
+  <text x="84" y="264" class="d">• Job description form</text>
+  <text x="84" y="286" class="d">• Ranked candidate list</text>
+  <text x="84" y="308" class="d">• Skills chart, KPIs, PDF export</text>
+
+  <rect x="64" y="374" width="232" height="164" rx="10" class="card"/>
+  <rect x="64" y="374" width="4" height="164" rx="2" fill="#a855f7"/>
+  <text x="84" y="402" class="t">Interview</text>
+  <text x="84" y="430" class="d">• AI interviewer chat</text>
+  <text x="84" y="452" class="d">• Voice mode with silence</text>
+  <text x="96" y="470" class="d">detection</text>
+  <text x="84" y="492" class="d">• Python editor with live</text>
+  <text x="96" y="510" class="d">sandboxed output</text>
+
+  <!-- client <-> backend -->
+  <line x1="324" y1="352" x2="376" y2="352" class="wire" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="350" y="338" class="lbl" text-anchor="middle">REST</text>
+  <text x="350" y="374" class="lbl" text-anchor="middle">JSON</text>
+
+  <!-- ============ BACKEND ============ -->
+  <rect x="380" y="104" width="500" height="496" rx="14" class="panel"/>
+  <text x="404" y="136" class="ph" fill="#2dd4bf">BACKEND</text>
+  <text x="404" y="156" class="sub">FastAPI · Pydantic · SQLModel</text>
+
+  <!-- routers -->
+  <g>
+    <rect x="404" y="190" width="136" height="44" rx="22" fill="#0f2f2c" stroke="#14b8a6"/>
+    <text x="472" y="217" class="chip" text-anchor="middle">/candidates</text>
+    <rect x="564" y="190" width="136" height="44" rx="22" fill="#0f2f2c" stroke="#14b8a6"/>
+    <text x="632" y="217" class="chip" text-anchor="middle">/interview</text>
+    <rect x="724" y="190" width="136" height="44" rx="22" fill="#0f2f2c" stroke="#14b8a6"/>
+    <text x="792" y="217" class="chip" text-anchor="middle">/analytics</text>
+  </g>
+  <text x="632" y="252" class="d" text-anchor="middle">routers call services</text>
+
+  <!-- services -->
+  <rect x="404" y="264" width="218" height="106" rx="10" class="card"/>
+  <rect x="404" y="264" width="4" height="106" rx="2" fill="#14b8a6"/>
+  <text x="424" y="292" class="t">Resume parser</text>
+  <text x="424" y="316" class="d">pypdf text extraction,</text>
+  <text x="424" y="336" class="d">LLM turns it into a profile</text>
+  <text x="424" y="356" class="d">(name, skills, experience)</text>
+
+  <rect x="642" y="264" width="218" height="106" rx="10" class="card"/>
+  <rect x="642" y="264" width="4" height="106" rx="2" fill="#14b8a6"/>
+  <text x="662" y="292" class="t">LLM client</text>
+  <text x="662" y="316" class="d">Robust JSON parsing,</text>
+  <text x="662" y="336" class="d">offline fallback when no</text>
+  <text x="662" y="356" class="d">API key (demo mode)</text>
+
+  <rect x="404" y="390" width="218" height="106" rx="10" class="card"/>
+  <rect x="404" y="390" width="4" height="106" rx="2" fill="#14b8a6"/>
+  <text x="424" y="418" class="t">Matcher</text>
+  <text x="424" y="442" class="d">0-100 score, matched and</text>
+  <text x="424" y="462" class="d">missing skills, justification;</text>
+  <text x="424" y="482" class="d">qualifies at 80 or more</text>
+
+  <rect x="642" y="390" width="218" height="106" rx="10" class="card"/>
+  <rect x="642" y="390" width="4" height="106" rx="2" fill="#14b8a6"/>
+  <text x="662" y="418" class="t">Code executor</text>
+  <text x="662" y="442" class="d">Runs candidate code out of</text>
+  <text x="662" y="462" class="d">process with timeout and</text>
+  <text x="662" y="482" class="d">CPU, memory, file limits</text>
+
+  <!-- ORM -->
+  <rect x="404" y="516" width="456" height="60" rx="10" class="card"/>
+  <rect x="404" y="516" width="4" height="60" rx="2" fill="#14b8a6"/>
+  <text x="424" y="542" class="t">SQLModel ORM</text>
+  <text x="424" y="562" class="d">candidates · job matches · interview history</text>
+
+  <!-- ============ SERVICES & INFRA ============ -->
+  <rect x="940" y="104" width="300" height="496" rx="14" class="panel"/>
+  <text x="964" y="136" class="ph" fill="#fb923c">EXTERNAL &amp; INFRA</text>
+  <text x="964" y="156" class="sub">AI providers, sandbox, storage</text>
+
+  <rect x="964" y="176" width="252" height="68" rx="10" class="card"/>
+  <rect x="964" y="176" width="4" height="68" rx="2" fill="#fbbf24"/>
+  <text x="984" y="204" class="t">Edge TTS</text>
+  <text x="984" y="226" class="d">Interviewer's voice (MP3 stream)</text>
+
+  <rect x="964" y="264" width="252" height="106" rx="10" class="card"/>
+  <rect x="964" y="264" width="4" height="106" rx="2" fill="#f97316"/>
+  <text x="984" y="292" class="t">Groq</text>
+  <text x="984" y="316" class="d">Llama 3.3 70B: parsing,</text>
+  <text x="984" y="336" class="d">matching, interviewer chat</text>
+  <text x="984" y="356" class="d">Whisper: speech to text</text>
+
+  <rect x="964" y="390" width="252" height="106" rx="10" class="card"/>
+  <rect x="964" y="390" width="4" height="106" rx="2" fill="#ef4444"/>
+  <text x="984" y="418" class="t">Isolated sandbox</text>
+  <text x="984" y="442" class="d">python -I child process, or</text>
+  <text x="984" y="462" class="d">Docker with no network and a</text>
+  <text x="984" y="482" class="d">read-only filesystem</text>
+
+  <rect x="964" y="516" width="252" height="60" rx="10" class="card"/>
+  <rect x="964" y="516" width="4" height="60" rx="2" fill="#3b82f6"/>
+  <text x="984" y="542" class="t">SQLite</text>
+  <text x="984" y="562" class="d">any SQLAlchemy URL works</text>
+
+  <!-- backend -> infra wires -->
+  <path d="M632,190 V170 H900 V210 H960" class="wire" marker-end="url(#arrow)"/>
+  <line x1="860" y1="317" x2="960" y2="317" class="wire" marker-end="url(#arrow)"/>
+  <line x1="860" y1="443" x2="960" y2="443" class="wire" marker-end="url(#arrow)"/>
+  <line x1="860" y1="546" x2="960" y2="546" class="wire" marker-end="url(#arrow)"/>
+  <text x="910" y="308" class="lbl" text-anchor="middle">HTTPS</text>
+  <text x="910" y="434" class="lbl" text-anchor="middle">spawn</text>
+  <text x="910" y="537" class="lbl" text-anchor="middle">SQL</text>
+
+  <!-- footer pills -->
+  <rect x="40" y="626" width="370" height="40" rx="20" class="pill"/>
+  <circle cx="64" cy="646" r="5" fill="#22c55e"/>
+  <text x="78" y="651" class="pt">Demo mode: runs fully offline, no API key</text>
+
+  <rect x="426" y="626" width="390" height="40" rx="20" class="pill"/>
+  <circle cx="450" cy="646" r="5" fill="#22c55e"/>
+  <text x="464" y="651" class="pt">CI: ruff, pytest, ESLint, Vitest, Docker build</text>
+
+  <rect x="832" y="626" width="408" height="40" rx="20" class="pill"/>
+  <circle cx="856" cy="646" r="5" fill="#22c55e"/>
+  <text x="870" y="651" class="pt">One command: <tspan font-family="'JetBrains Mono', Consolas, monospace" fill="#e2e8f0">docker compose up --build</tspan></text>
+</svg>
