@@ -78,36 +78,9 @@ npm run dev
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    subgraph Browser["React + Vite UI"]
-        D[Dashboard]
-        I[Interview]
-    end
-
-    subgraph API["FastAPI backend"]
-        C["/candidates"]
-        V["/interview"]
-        A["/analytics"]
-        P[resume_parser]
-        M[matcher]
-        X[code_executor]
-        L[llm client]
-    end
-
-    DB[(SQLite / SQLModel)]
-    G["Groq: Llama 3.3 70B + Whisper"]
-    T[Edge TTS]
-    S["Sandbox: child process<br/>or Docker --network none"]
-
-    D --> C & A
-    I --> V
-    C --> P & M
-    P & M & V --> L --> G
-    V --> X --> S
-    V --> T
-    C & V & A --> DB
-```
+<p align="center">
+  <img src="docs/images/architecture.svg" alt="Architecture: React UI calls a FastAPI backend over REST; routers use the resume parser, matcher, LLM client and code executor; the backend talks to Groq (Llama 3.3 70B, Whisper), Edge TTS, an isolated sandbox and SQLite" width="100%">
+</p>
 
 ### How matching works
 
