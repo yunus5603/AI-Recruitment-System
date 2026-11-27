@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { apiUrl } from '../lib/api';
 
 function JobDescriptionInput({ onJobMatch, candidatesCount }) {
     const [jobTitle, setJobTitle] = useState('');
@@ -28,7 +29,7 @@ function JobDescriptionInput({ onJobMatch, candidatesCount }) {
         };
 
         try {
-            const response = await fetch('http://localhost:8000/candidates/match', {
+            const response = await fetch(apiUrl('/candidates/match'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

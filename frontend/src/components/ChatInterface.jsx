@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import useAudioRecorder from '../hooks/useAudioRecorder';
 import { Mic, Square, Volume2 } from 'lucide-react';
+import { apiUrl } from '../lib/api';
 
 function ChatInterface() {
     const [messages, setMessages] = useState([]);
@@ -12,9 +13,9 @@ function ChatInterface() {
     const messagesEndRef = useRef(null);
 
     // Voice State
-    const { isRecording, startRecording, stopRecording, volume } = useAudioRecorder();
+    const { isRecording, startRecording, stopRecording } = useAudioRecorder();
     const [isVoiceMode, setIsVoiceMode] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
+    const [, setIsPlaying] = useState(false);
     const audioRef = useRef(new Audio());
 
     const scrollToBottom = () => {
@@ -65,7 +66,7 @@ function ChatInterface() {
             const formData = new FormData();
             formData.append('file', audioBlob, 'recording.webm');
 
-            const transRes = await fetch('http://localhost:8000/interview/transcribe', {
+            const transRes = await fetch(apiUrl('/interview/transcribe'), {
                 method: 'POST',
                 body: formData
             });
@@ -89,7 +90,7 @@ function ChatInterface() {
         if (!isVoiceMode) return;
 
         try {
-            const res = await fetch(`http://localhost:8000/interview/speak?text=${encodeURIComponent(text)}`, {
+            const res = await fetch(apiUrl(`/interview/speak?text=${encodeURIComponent(text)}`), {
                 method: 'POST'
             }); // Note: POST usually sends body, but let's check backend endpoint definition. 
             // Oh, backend defined 'text' as query param implicitly if not Body().
@@ -128,7 +129,7 @@ function ChatInterface() {
         setSending(true);
 
         try {
-            const response = await fetch('http://localhost:8000/interview/chat', {
+            const response = await fetch(apiUrl('/interview/chat'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -161,7 +162,7 @@ function ChatInterface() {
         setExecutionResult(null);
 
         try {
-            const response = await fetch('http://localhost:8000/interview/execute-code', {
+            const response = await fetch(apiUrl('/interview/execute-code'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
